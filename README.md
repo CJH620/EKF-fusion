@@ -6,28 +6,14 @@ EKF differs from a linear discrete KF in that it deals with non-linear processes
 
 The input data is in the format:
 * #L (lidar) meas_px meas_py timestamp gt_px gt_py gt_vx gt_vy
-* #R (radar) meas_tho meas_phi meas_rho_dot timestamp gt_px gt_py gt_vx gt_vy
+* #R (radar) meas_rho meas_phi meas_rho_dot timestamp gt_px gt_py gt_vx gt_vy
 
 The output data is in the format:
 * est_px est_py est_vx est_vy meas_px meas_py gt_px gt_py gt_vx gt_vy
 
 
-
 ## file structure
 
-```
-.
-├── CMakeLists.txt
-├── data
-├── run.sh                      build script
-└── src
-    ├── ekf.cpp                 for all the EKF goodness
-    ├── ekf.hpp
-    ├── main.cpp                reads data, calls function to run EKF 
-    ├── measurement.hpp         sensor prototypes
-    ├── tools.cpp               helper functions
-    └── tools.hpp
-```
 
 
 ## dependencies

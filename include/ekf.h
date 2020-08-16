@@ -2,9 +2,9 @@
 #define EKF_H_
 
 #include <Eigen/Dense>
-#include "measurement.hpp"
-#include "tools.hpp"
-#include "kalman.hpp"
+#include "measurement.h"
+#include "tools.h"
+#include "kalman.h"
 
 class EKF {
 public:
@@ -12,7 +12,7 @@ public:
 
     virtual ~EKF();
 
-    void ProcessMeasurements(const Measurements &measurement_pack);
+    void Process(const Measurements &measurement_pack);
 
     KalmanFilter ekf;
 

@@ -1,6 +1,8 @@
+#ifndef KALMAN_H_
+#define KALMAN_H
+
 #include <Eigen/Dense>
 
-#pragma once
 
 class KalmanFilter {
 public:
@@ -41,3 +43,5 @@ private:
     // estimated state
     Eigen::VectorXd x_hat;
 };
+
+#endif // KALMAN_H_
