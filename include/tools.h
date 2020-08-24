@@ -4,8 +4,17 @@
 #include <vector>
 #include <Eigen/Dense>
 
-// cartesian 2 polar
-// polar 2 cartesian
-// compute jacobian
+class Tools {
+public:
+    
+    Tools();
+
+    ~Tools();
+
+    Eigen::MatrixXd CalculateJacobian(const Eigen::VectorXd& x_hat);
+
+private:
+    Eigen::MatrixXd Hj;
+};
 
 #endif // TOOLS_H_
