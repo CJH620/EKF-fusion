@@ -2,13 +2,9 @@
 #include <sstream>
 #include <fstream>
 #include <Eigen/Dense>
-#include <vector>
-
 #include "fusion.h"
-#include "ekf.h"
 #include "ground_truth.h"
 #include "measurement.h"
-#include "tools.h"
 
 
 int main(int argc, char* argv[]) {
@@ -21,30 +17,55 @@ int main(int argc, char* argv[]) {
     std::string line;
 
     // initialize covariances
-    int n = 3;
-    int m = 1;
-    int l = 1;
+    int n = 4;
+    int m = 3;
+    int l = 2;
 
     Eigen::MatrixXd A(n,n);
-    Eigen::MatrixXd B(n,l);
-    Eigen::Matrixd H(m,n);
+    Eigen::MatrixXd H_LIDAR(l,l);
+    Eigen::MatrixXd H_RADAR(m,m);
     Eigen::MatrixXd Q(n,n);
     Eigen::MatrixXd P(n,n);
-    Eigen::MatrixXd R(m,m);
+    Eigen::MatrixXd R_LIDAR(l,l);
+    Eigen::MatrixXd R_RADAR(m,m);
 
-    // construct fusion and ekf instance
+    double dt = 1.0;
+
+    // init A, H_LIDAR, H_RADAR, Q, P, R_LIDAR, R_RADAR
+    A << 1, 0, dt, 0,
+      0, 1, 0, dt,
+      0, 0, 1, 0,
+      0, 0, 0, 1;
+
+    H_LIDAR << 1, 0, 0, 0,
+            0, 1, 0, 0;
+
+    H; // init H differently
+
+    Q; // generate noise
+
+    P << 1, 0, 0, 0,
+      0, 1, 0, 0,
+      0, 0, 1000, 0,
+      0, 0, 0, 1000;
+
+    R_LIDAR << 0.0225, 0,
+            0, 0.0225;
+
+    R_RADAR << 0.09, 0, 0,
+            0, 0.0009, 0,
+            0, 0, 0.09;
+
     Fusion fusion;
-    EKF ekf;
-
-
 
     while(std::getline(infile, line)) {
-        
+    
         // constructed and destructed on each loop so each line has its own instance
         std::string sensor_type;
         Measurement measurement;
         GroundTruth groundtruth;
         long long timestamp;
+        Eigen::VectorXd estimation;
     
         std::istringstream iss(line);
 
@@ -84,24 +105,20 @@ int main(int argc, char* argv[]) {
         iss >> gt_vx;
         iss >> gt_vy;
 
-
         // process measurements and set initial values/matrices
+        // predict the state ahead, project the error covariance
+        // compute kalman gain, update measurement with zK, update error covariance
         fusion.Process(measurement);
-        // predict the state ahead
-        // project the error covariance ahead
-        ekf.predict(u);
-        // compute kalman gain
-        // update measurement with z_k
-        // update error covariance
-        ekf.update(z);
+        estimation.push_back(fusion.GetEstimation());
 
         // est_px, est_py, est_vx, est_vy
-        std::cout << ekf.state(0) << "," << ekf.state(1) << "," << ekf.state(2) << "," << ekf.state(3) << "," << measurement.raw[0] << "," << measurement.raw[1] << "," << gt_gx << "," << gt_gy << "," << gt_vx << "," << gt_vy << std::endl; 
+        std::cout << estimation(0) << "," << estimation(1) << "," << estimation(2) << "," << estimation(3) << "," << measurement.raw[0] << "," << measurement.raw[1] << "," << gt_gx << "," << gt_gy << "," << gt_vx << "," << gt_vy << std::endl; 
 
         // destructors should auto call at out of scope? does it go out of scope?
 
     }
+
+    if(infile.is_open()) { infile.close(); }
+
+    return 0;
 }
-
-
-

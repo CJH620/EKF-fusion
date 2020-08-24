@@ -1,27 +1,28 @@
 #include <iostream>
-#include <Eigen/Dense>
-#include <cmath>
+#include <vector>
 #include "measurement.h"
 #include "fusion.h"
 #include "tools.h"
+
+EKF ekf;
+Tools tools;
 
 Fusion::Fusion() {
     is_initialized = false;
     // initialize process and measurement noise values
 }
 
-// destroy
-Fusion::~Fusion() {}
+Fusion::~Fusion() { }
 
 void Fusion::init(const Measurement& measurement) {
 
     // set up initial values
-    ekf.state = Eigen::VectorXd(4);
+    ekf.x_hat = Eigen::VectorXd(4);
 
     if(measurement.sensor_type==Measurement::LIDAR) {
         // if measurement type is LIDAR
         // dont have initial vx, vy so pack with zeros
-        ekf.state << measurement.raw[0], measurement.raw[1], 0, 0;
+        ekf.x_hat << measurement.raw[0], measurement.raw[1], 0, 0;
 
     } else if(measurement.sensor_type==Measurement::RADAR) {
         // if measurement type is RADAR
@@ -34,28 +35,46 @@ void Fusion::init(const Measurement& measurement) {
         double y = rho * sin(phi);
         double vx = rho_dot * cos(phi);
         double vy = rho_dot * sin(phi);
-        ekf.state << x, y, vx, vy
+        ekf.x_hat << x, y, vx, vy
 
     }
 
-    // debugging
-    std::cout << ekf.state << std::endl;
-
     previous_timestamp = measurement.timestamp;
     is_initialized = true;
+
+    Compute(measurement);
 }
 
-void Fusion::Compute(const Measurement &measurement) {
-    
+void Fusion::Compute(const Measurement& measurement) {
+    // set up matrices
+    // init H, R
 
+    // predict based on the input and previous estimate
+    ekf.predict(); // updates P
 
+    // vary update type 
+    if(measurement.sensor_type==Measurement::LIDAR) {
+        // LIDAR update
+        
+        ekf.H = H_LIDAR;
+        ekf.R = R_LIDAR;
+        ekf.UpdateLIDAR(measurement.raw);
 
+    } else if(measurement.sensor_type==Measurement::RADAR) {
+        // RADAR update
+        
+        ekf.H = tools.CalculateJacobian(ekf.x_hat);
+        ekf.R = R_RADAR;
+        ekf.UpdateRADAR(measurement.raw);
+
+    }
 
 }
-
-
 
 
 void Fusion::Process(const Measurement& measurement) {
     is_initialized ? this->Compute(measurement) : this->init(measurement);
 }
+
+double Fusion::GetEstimation() { return ekf.x_hat }
+
