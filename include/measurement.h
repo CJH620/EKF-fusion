@@ -12,7 +12,7 @@ public:
         RADAR
     } sensor_type;
 
-    Eigen::VectorXd raw_measurements;
+    Eigen::VectorXd raw;
 };
 
 #endif // MEASUREMENT_H_

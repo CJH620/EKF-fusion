@@ -2,6 +2,7 @@
 #define EKF_H_
 
 #include <Eigen/Dense>
+#include "measurement.h"
 
 class EKF {
 public:
@@ -15,22 +16,22 @@ public:
 
     ~EKF();
 
-    void init();
+    void init(const Measurement& measurement);
 
-    void Predict();
+    void Compute(const Measurement& measurement);    
 
-    void UpdateLIDAR(const Eigen::VectorXd& z);
+    void Process(const Measurement& measurement);
 
-    void UpdateRADAR(const Eigen::VectorXd& z);
+    Eigen::VectorXd State() { return x_hat; }; 
 
 private:
-    Eigen::MatrixXd A, H_RADAR, H_LIDAR, Q, P, R_LIDAR, R_RADAR;
-
+    bool is_initialized;
     int m, n, l;
 
+    Eigen::VectorXd h;
     Eigen::MatrixXd I;
-
     Eigen::VectorXd x_hat;
+    Eigen::MatrixXd A, H_RADAR, H_LIDAR, Q, P, R_LIDAR, R_RADAR, K;
 };
 
 #endif // EKF_H_

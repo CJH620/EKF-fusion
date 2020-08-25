@@ -2,14 +2,13 @@
 #include <sstream>
 #include <fstream>
 #include <Eigen/Dense>
-#include "fusion.h"
+#include "ekf.h"
 #include "measurement.h"
 
 
 int main(int argc, char* argv[]) {
     
     // implement checks for file presence
-
 
     // the sensor data supplied as an argument
     std::string infile_name(argv[1]);
@@ -33,19 +32,34 @@ int main(int argc, char* argv[]) {
     double dt = 1.0;
 
     // init A, H_LIDAR, H_RADAR, Q, P, R_LIDAR, R_RADAR
-    A << 1, 0, dt, 0, 0, 1, 0, dt, 0, 0, 1, 0, 0, 0, 0, 1;
+    A << 1, 0, dt, 0, 
+      0, 1, 0, dt,
+      0, 0, 1, 0,
+      0, 0, 0, 1;
 
-    H_LIDAR << 1, 0, 0, 0, 0, 1, 0, 0;
+    H_LIDAR << 1, 0,
+            0, 0,
+            0, 1,
+            0, 0;
 
-    Q << .05, 0, .05, 0, 0, .05, 0, .05, .05, 0, .05, 0, 0, .05, 0, .05;
+    Q << .05, 0, .05, 0,
+      0, .05, 0, .05,
+      .05, 0, .05, 0,
+      0, .05, 0, .05;
 
-    P << 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1000, 0,0, 0, 0, 1000;
+    P << 1, 0, 0, 0,
+      0, 1, 0, 0,
+      0, 0, 1000, 0,
+      0, 0, 0, 1000;
 
-    R_LIDAR << .0225, 0, 0, .0225;
+    R_LIDAR << .0225, 0,
+            0, .0225;
 
-    R_RADAR << .09, 0, 0, 0, .0009, 0, 0, 0, .09;
+    R_RADAR << .09, 0, 0,
+            0, .0009, 0,
+            0, 0, .09;
 
-    Fusion fusion(A, H_LIDAR, Q, P, R_LIDAR, R_RADAR);
+    EKF ekf(A, H_LIDAR, Q, P, R_LIDAR, R_RADAR);
 
     while(std::getline(infile, line)) {
     
@@ -96,10 +110,10 @@ int main(int argc, char* argv[]) {
         // process measurements and set initial values/matrices
         // predict the state ahead, project the error covariance
         // compute kalman gain, update measurement with zK, update error covariance
-        fusion.Process(measurement);
+        ekf.Process(measurement);
 //        estimation.push_back(fusion.GetEstimation());
 
-        std::cout << fusion.state()[0] << "," << fusion.state()[1] << "," << fusion.state()[2] << "," << fusion.state()[3] << "," << measurement.raw[0] << "," << measurement.raw[1] << "," << gt_gx << "," << gt_gy << "," << gt_vx << "," << gt_vy << std::endl; 
+        std::cout << ekf.State()[0] << "," << ekf.State()[1] << "," << ekf.State()[2] << "," << ekf.State()[3] << "," << measurement.raw[0] << "," << measurement.raw[1] << "," << gt_px << "," << gt_py << "," << gt_vx << "," << gt_vy << std::endl; 
 
         // destructors should auto call at out of scope? does it go out of scope?
 
