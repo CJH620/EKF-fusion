@@ -3,7 +3,7 @@
 
 #include <Eigen/Dense>
 
-class Measurements {
+class Measurement {
 public:
     long long timestamp;
 

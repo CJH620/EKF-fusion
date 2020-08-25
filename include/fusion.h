@@ -5,6 +5,7 @@
 #include "measurement.h"
 #include "ekf.h"
 
+EKF ekf;
 Measurement measurement;
 
 class Fusion {

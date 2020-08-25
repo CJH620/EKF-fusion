@@ -3,10 +3,11 @@
 #include "measurement.h"
 #include "fusion.h"
 #include "tools.h"
+#include "ekf.h"
 
 EKF ekf;
 Tools tools;
-Measurement measurement;
+//Measurement measurement;
 
 Fusion::Fusion() { is_initialized = false; }
 
