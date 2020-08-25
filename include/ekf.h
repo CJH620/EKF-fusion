@@ -2,31 +2,35 @@
 #define EKF_H_
 
 #include <Eigen/Dense>
-#include "measurement.h"
-#include "tools.h"
-#include "kalman.h"
 
 class EKF {
 public:
-    EKF();
+    EKF(
+        const Eigen::MatrixXd& A,
+        const Eigen::MatrixXd& H_LIDAR,
+        const Eigen::MatrixXd& Q,
+        const Eigen::MatrixXd& P,
+        const Eigen::MatrixXd& R_LIDAR,
+        const Eigen::MatrixXd& R_RADAR);
 
-    virtual ~EKF();
+    ~EKF();
 
-    void Process(const Measurements &measurement_pack);
+    void init();
 
-    KalmanFilter ekf;
+    void Predict();
+
+    void UpdateLIDAR(const Eigen::VectorXd& z);
+
+    void UpdateRADAR(const Eigen::VectorXd& z);
 
 private:
-    bool initialized;
+    Eigen::MatrixXd A, H_RADAR, H_LIDAR, Q, P, R_LIDAR, R_RADAR;
 
-    long previous_timestamp;
+    int m, n, l;
 
-    // probs should initialize tools here
+    Eigen::MatrixXd I;
 
-    Eigen::MatrixXd R_lidar;
-    Eigen::MatrixXd R_radar;
-    Eigen::MatrixXd H_lidar;
-    Eigen::MatrixXd Hj;
+    Eigen::VectorXd x_hat;
 };
 
-#endif //EKF_H_
+#endif // EKF_H_

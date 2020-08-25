@@ -6,18 +6,13 @@
 
 EKF ekf;
 Tools tools;
+Measurement measurement;
 
-Fusion::Fusion() {
-    is_initialized = false;
-    // initialize process and measurement noise values
-}
+Fusion::Fusion() { is_initialized = false; }
 
 Fusion::~Fusion() { }
 
 void Fusion::init(const Measurement& measurement) {
-
-    // set up initial values
-    ekf.x_hat = Eigen::VectorXd(4);
 
     if(measurement.sensor_type==Measurement::LIDAR) {
         // if measurement type is LIDAR
@@ -46,35 +41,23 @@ void Fusion::init(const Measurement& measurement) {
 }
 
 void Fusion::Compute(const Measurement& measurement) {
-    // set up matrices
-    // init H, R
-
     // predict based on the input and previous estimate
-    ekf.predict(); // updates P
+    ekf.Predict(); // updates P
 
     // vary update type 
     if(measurement.sensor_type==Measurement::LIDAR) {
         // LIDAR update
-        
-        ekf.H = H_LIDAR;
-        ekf.R = R_LIDAR;
         ekf.UpdateLIDAR(measurement.raw);
 
     } else if(measurement.sensor_type==Measurement::RADAR) {
         // RADAR update
-        
-        ekf.H = tools.CalculateJacobian(ekf.x_hat);
-        ekf.R = R_RADAR;
+        ekf.H_RADAR  = tools.CalculateJacobian(ekf.x_hat);
         ekf.UpdateRADAR(measurement.raw);
 
     }
-
 }
 
 
 void Fusion::Process(const Measurement& measurement) {
     is_initialized ? this->Compute(measurement) : this->init(measurement);
 }
-
-double Fusion::GetEstimation() { return ekf.x_hat }
-

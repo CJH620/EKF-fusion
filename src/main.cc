@@ -3,12 +3,14 @@
 #include <fstream>
 #include <Eigen/Dense>
 #include "fusion.h"
-#include "ground_truth.h"
 #include "measurement.h"
 
 
 int main(int argc, char* argv[]) {
     
+    // implement checks for file presence
+
+
     // the sensor data supplied as an argument
     std::string infile_name(argv[1]);
     // uses c-style string with newline instead of char*
@@ -22,8 +24,7 @@ int main(int argc, char* argv[]) {
     int l = 2;
 
     Eigen::MatrixXd A(n,n);
-    Eigen::MatrixXd H_LIDAR(l,l);
-    Eigen::MatrixXd H_RADAR(m,m);
+    Eigen::MatrixXd H_LIDAR(l,n);
     Eigen::MatrixXd Q(n,n);
     Eigen::MatrixXd P(n,n);
     Eigen::MatrixXd R_LIDAR(l,l);
@@ -32,38 +33,25 @@ int main(int argc, char* argv[]) {
     double dt = 1.0;
 
     // init A, H_LIDAR, H_RADAR, Q, P, R_LIDAR, R_RADAR
-    A << 1, 0, dt, 0,
-      0, 1, 0, dt,
-      0, 0, 1, 0,
-      0, 0, 0, 1;
+    A << 1, 0, dt, 0, 0, 1, 0, dt, 0, 0, 1, 0, 0, 0, 0, 1;
 
-    H_LIDAR << 1, 0, 0, 0,
-            0, 1, 0, 0;
+    H_LIDAR << 1, 0, 0, 0, 0, 1, 0, 0;
 
-    H; // init H differently
+    Q << .05, 0, .05, 0, 0, .05, 0, .05, .05, 0, .05, 0, 0, .05, 0, .05;
 
-    Q; // generate noise
+    P << 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1000, 0,0, 0, 0, 1000;
 
-    P << 1, 0, 0, 0,
-      0, 1, 0, 0,
-      0, 0, 1000, 0,
-      0, 0, 0, 1000;
+    R_LIDAR << .0225, 0, 0, .0225;
 
-    R_LIDAR << 0.0225, 0,
-            0, 0.0225;
+    R_RADAR << .09, 0, 0, 0, .0009, 0, 0, 0, .09;
 
-    R_RADAR << 0.09, 0, 0,
-            0, 0.0009, 0,
-            0, 0, 0.09;
-
-    Fusion fusion;
+    Fusion fusion(A, H_LIDAR, Q, P, R_LIDAR, R_RADAR);
 
     while(std::getline(infile, line)) {
     
         // constructed and destructed on each loop so each line has its own instance
         std::string sensor_type;
         Measurement measurement;
-        GroundTruth groundtruth;
         long long timestamp;
         Eigen::VectorXd estimation;
     
@@ -109,10 +97,9 @@ int main(int argc, char* argv[]) {
         // predict the state ahead, project the error covariance
         // compute kalman gain, update measurement with zK, update error covariance
         fusion.Process(measurement);
-        estimation.push_back(fusion.GetEstimation());
+//        estimation.push_back(fusion.GetEstimation());
 
-        // est_px, est_py, est_vx, est_vy
-        std::cout << estimation(0) << "," << estimation(1) << "," << estimation(2) << "," << estimation(3) << "," << measurement.raw[0] << "," << measurement.raw[1] << "," << gt_gx << "," << gt_gy << "," << gt_vx << "," << gt_vy << std::endl; 
+        std::cout << fusion.state()[0] << "," << fusion.state()[1] << "," << fusion.state()[2] << "," << fusion.state()[3] << "," << measurement.raw[0] << "," << measurement.raw[1] << "," << gt_gx << "," << gt_gy << "," << gt_vx << "," << gt_vy << std::endl; 
 
         // destructors should auto call at out of scope? does it go out of scope?
 

@@ -17,14 +17,22 @@ The output data is in the format:
 
 
 ## dependencies
-* cmake 3.18.1
-* make 3.18
-* gcc 10.2
+* Eigen
+
 
 ## usage
 
-`./run.sh`
+Everything is handled through the `run.sh` script which should be run from this main directory. The `-t` flag is the run type. To build the C++ executable, run the following. This will build everything in a `build/` directory.
 
+```bash
+./run.sh -t build`
+```
+
+to run
+
+```bash
+./run.sh -t run
+```
 
 ## resources
 * https://github.com/udacity/CarND-Extended-Kalman-Filter-Project

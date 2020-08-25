@@ -9,7 +9,7 @@ Tools::Tools() { }
 
 Tools::~Tools() { }
 
-Eigen::MatrixXd Tools::CalculateJacobian(const VectorXd& x_hat) {
+Eigen::MatrixXd Tools::CalculateJacobian(const Eigen::VectorXd& x_hat) {
     float px = x_hat(0);
     float py = x_hat(1);
     float vx = x_hat(2);
