@@ -14,7 +14,7 @@ public:
         const Eigen::MatrixXd& R_LIDAR,
         const Eigen::MatrixXd& R_RADAR);
 
-    ~EKF();
+    virtual ~EKF();
 
     void init(const Measurement& measurement);
 
