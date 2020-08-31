@@ -13,7 +13,7 @@ The output data is in the format:
 
 ## results
 
-<p align="center"><img src="https://raw.githubusercontent.com/onlycase/EKF-fusion/master/plots/ekf-1.png"/></p>
+<p align="center"><img src="https://raw.githubusercontent.com/onlycase/EKF-fusion/master/plots/ekf-fusion-1.png"/></p>
 
 
 ## file structure

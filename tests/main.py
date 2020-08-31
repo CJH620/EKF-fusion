@@ -32,10 +32,10 @@ if __name__ == "__main__":
 
 
 
-    plt.scatter(meas_px, meas_py, color="g", marker="x", zorder=2)
-    plt.plot(gt_px, gt_py, color="b", zorder=1)
-    plt.plot(est_px, est_py, color="r", zorder=3)
+    plt.scatter(meas_px, meas_py, color="g", marker="x")
+    plt.plot(gt_px, gt_py, color="b")
+    plt.plot(est_px, est_py, color="r")
     plt.xlabel("px")
     plt.ylabel("py")
     plt.legend(["ground truth","EKF estimation","measurement"])
-    plt.savefig("plots/ekf-1.png")
+    plt.savefig("plots/ekf-fusion-1.png")
