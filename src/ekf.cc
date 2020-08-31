@@ -18,7 +18,6 @@ EKF::EKF(
     is_initialized = false;
 }
 
-
 EKF::~EKF() { }
 
 void EKF::init(const Measurement& measurement) {
@@ -60,7 +59,7 @@ void EKF::Compute(const Measurement& measurement) {
         // LIDAR update
         // normal kalman filter update
 
-        K = P * H_LIDAR.transpose() + (H_LIDAR * P * H_LIDAR.transpose() + R_LIDAR).inverse();
+        K = P * H_LIDAR.transpose() * (H_LIDAR * P * H_LIDAR.transpose() + R_LIDAR).inverse();
         x_hat += K*(measurement.raw - H_LIDAR * x_hat);
         P = (I - K * H_LIDAR) * P;
 
@@ -71,16 +70,16 @@ void EKF::Compute(const Measurement& measurement) {
         double rho = sqrt(x_hat(0) * x_hat(0) + x_hat(1) * x_hat(1));
         double theta = atan(x_hat(1) / x_hat(0));
         double rho_dot = (x_hat(0) * x_hat(2) + x_hat(1) * x_hat(3)) / rho;
+        Eigen::VectorXd h = Eigen::VectorXd(3);
         h << rho, theta, rho_dot;
         
         H_RADAR = tools.CalculateJacobian(x_hat);
 
-        K = P * H_RADAR.transpose() + (H_RADAR * P * H_RADAR.transpose() + R_RADAR).inverse();
+        K = P * H_RADAR.transpose() * (H_RADAR * P * H_RADAR.transpose() + R_RADAR).inverse();
         x_hat += K*(measurement.raw - h);
         P = (I - K * H_RADAR) * P;
     }
 }
-
 
 void EKF::Process(const Measurement& measurement) {
     is_initialized ? this->Compute(measurement) : this->init(measurement);

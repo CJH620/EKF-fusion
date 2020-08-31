@@ -66,6 +66,7 @@ int main(int argc, char* argv[]) {
         Measurement measurement;
         long long timestamp;
         Eigen::VectorXd estimation;
+        Eigen::VectorXd meas_out = Eigen::VectorXd(2);
     
         std::istringstream iss(line);
 
@@ -85,6 +86,11 @@ int main(int argc, char* argv[]) {
             // measurement class write
             measurement.raw << x, y;
             measurement.timestamp = timestamp;
+            measurement.sensor_type = Measurement::LIDAR;
+
+            // write x, y to meas output
+            meas_out << x, y;
+
         } else if(sensor_type.compare("R")==0) {
             // RADAR measurement
             // set raw size
@@ -97,8 +103,11 @@ int main(int argc, char* argv[]) {
             iss >> timestamp;
             // measurement class write
             measurement.raw << rho, phi, rho_dot;
-
             measurement.timestamp = timestamp;
+            measurement.sensor_type = Measurement::RADAR;
+
+            meas_out << rho*cos(phi), rho*sin(phi);
+
         }
 
 
@@ -118,7 +127,10 @@ int main(int argc, char* argv[]) {
 
 //        estimation.push_back(fusion.GetEstimation());
 
-        std::cout << ekf.State()[0] << "," << ekf.State()[1] << "," << ekf.State()[2] << "," << ekf.State()[3] << "," << measurement.raw[0] << "," << measurement.raw[1] << "," << gt_px << "," << gt_py << "," << gt_vx << "," << gt_vy << std::endl; 
+        std::cout << ekf.State()[0] << "," << ekf.State()[1] << "," << ekf.State()[2] << "," << ekf.State()[3] << "," << meas_out[0] << "," << meas_out[1] << "," << gt_px << "," << gt_py << "," << gt_vx << "," << gt_vy << std::endl; 
+
+//        std::cout << ekf.State()[0] << "," << ekf.State()[1] << std::endl;
+
 
         // destructors should auto call at out of scope? does it go out of scope?
 

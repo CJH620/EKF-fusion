@@ -11,14 +11,38 @@ The input data is in the format:
 The output data is in the format:
 * est_px est_py est_vx est_vy meas_px meas_py gt_px gt_py gt_vx gt_vy
 
+## results
+
+<p align="center"><img src="https://raw.githubusercontent.com/onlycase/EKF-fusion/master/plots/ekf-1.png"/></p>
+
 
 ## file structure
 
-
+.
+├── CMakeLists.txt
+├── README.md
+├── assets
+├── data                -> data as .txt
+├── include
+│   ├── ekf.h           -> EKF + sensor fusion
+│   ├── measurement.h   -> measurement type
+│   └── tools.h         -> tools
+├── plots               -> generated plots are here
+├── run.sh              -> script to run
+├── src
+│   ├── ekf.cc
+│   ├── main.cc
+│   └── tools.cc
+└── tests
+    └── main.py         -> plotting script
 
 ## dependencies
+
+C++
 * Eigen
 
+Python
+* matplotlib
 
 ## usage
 
@@ -34,6 +58,8 @@ to run
 ./run.sh -t run
 ```
 
+
+
 ## resources
 * https://github.com/udacity/CarND-Extended-Kalman-Filter-Project
 * https://courses.cs.washington.edu/courses/cse571/03wi/notes/welch-bishop-tutorial.pdf
@@ -41,3 +67,4 @@ to run
 
 ## todo
 * port to [carla](https://github.com/carla-simulator/carla) -> should use linux. automated build on mac isnt set up yet. there is a PR from geohot [here](https://github.com/carla-simulator/carla/pull/2433) so maybe its possible soon.
+* fix second dataset

@@ -14,6 +14,7 @@ Eigen::MatrixXd Tools::CalculateJacobian(const Eigen::VectorXd& x_hat) {
     float py = x_hat(1);
     float vx = x_hat(2);
     float vy = x_hat(3);
+    Hj = Eigen::MatrixXd(3,4);
 
     float c1 = px * px + py * py;
     

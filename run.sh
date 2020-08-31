@@ -24,10 +24,10 @@ main() {
         build
     elif [[ $runtype == "run" ]]; then
         echo "${RED}>${RESET} running."
-        ./build/EKF data/lidar-radar-measurement-1.txt
+        ./build/EKF data/lidar-radar-measurement-1.txt | python3 tests/main.py
     elif [[ $runtype == "all" ]]; then
         build
-        ./EKF ../data/lidar-radar-synthetic-input.txt
+        ./EKF ../data/lidar-radar-synthetic-input.txt | python3 ../tests/main.py
     fi
 }
 
