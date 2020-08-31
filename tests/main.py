@@ -38,5 +38,4 @@ if __name__ == "__main__":
     plt.xlabel("px")
     plt.ylabel("py")
     plt.legend(["ground truth","EKF estimation","measurement"])
-    plt.show()
     plt.savefig("plots/ekf-1.png")
