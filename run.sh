@@ -20,13 +20,11 @@ build() {
 }
 
 main() {
-    echo "${RED}built with <3 by @onlycase_${RESET}"
-
     if [[ $runtype == "build" ]]; then
         build
     elif [[ $runtype == "run" ]]; then
         echo "${RED}>${RESET} running."
-        ./build/EKF data/lidar-radar-synthetic-input.txt
+        ./build/EKF data/lidar-radar-measurement-1.txt
     elif [[ $runtype == "all" ]]; then
         build
         ./EKF ../data/lidar-radar-synthetic-input.txt

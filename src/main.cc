@@ -37,10 +37,8 @@ int main(int argc, char* argv[]) {
       0, 0, 1, 0,
       0, 0, 0, 1;
 
-    H_LIDAR << 1, 0,
-            0, 0,
-            0, 1,
-            0, 0;
+    H_LIDAR << 1, 0, 0, 0,
+            0, 1, 0, 0;
 
     Q << .05, 0, .05, 0,
       0, .05, 0, .05,
@@ -76,6 +74,8 @@ int main(int argc, char* argv[]) {
 
         if(sensor_type.compare("L")==0) {
             // LIDAR measurement
+            // set raw size
+            measurement.raw = Eigen::VectorXd(2);
 
             // meas_px, meas_py
             float x, y;
@@ -85,9 +85,10 @@ int main(int argc, char* argv[]) {
             // measurement class write
             measurement.raw << x, y;
             measurement.timestamp = timestamp;
-
         } else if(sensor_type.compare("R")==0) {
             // RADAR measurement
+            // set raw size
+            measurement.raw = Eigen::VectorXd(3);
 
             float rho, phi, rho_dot;
             iss >> rho;
@@ -96,9 +97,11 @@ int main(int argc, char* argv[]) {
             iss >> timestamp;
             // measurement class write
             measurement.raw << rho, phi, rho_dot;
-            measurement.timestamp = timestamp;
 
+            measurement.timestamp = timestamp;
         }
+
+
 
         // read ground truth data
         float gt_px, gt_py, gt_vx, gt_vy;
@@ -110,7 +113,9 @@ int main(int argc, char* argv[]) {
         // process measurements and set initial values/matrices
         // predict the state ahead, project the error covariance
         // compute kalman gain, update measurement with zK, update error covariance
+
         ekf.Process(measurement);
+
 //        estimation.push_back(fusion.GetEstimation());
 
         std::cout << ekf.State()[0] << "," << ekf.State()[1] << "," << ekf.State()[2] << "," << ekf.State()[3] << "," << measurement.raw[0] << "," << measurement.raw[1] << "," << gt_px << "," << gt_py << "," << gt_vx << "," << gt_vy << std::endl; 
