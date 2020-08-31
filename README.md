@@ -51,7 +51,7 @@ Python
 Everything is handled through the `run.sh` script which should be run from this main directory. The `-t` flag is the run type. To build the C++ executable, run the following. This will build everything in a `build/` directory.
 
 ```bash
-./run.sh -t build`
+./run.sh -t build
 ```
 
 to run
