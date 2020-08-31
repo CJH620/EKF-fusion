@@ -18,6 +18,7 @@ The output data is in the format:
 
 ## file structure
 
+```
 .
 ├── CMakeLists.txt
 ├── README.md
@@ -36,6 +37,7 @@ The output data is in the format:
 └── tests
     └── main.py         -> plotting script
 
+```
 ## dependencies
 
 C++
